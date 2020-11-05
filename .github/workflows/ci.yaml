@@ -4,9 +4,7 @@ name: CI
 on:
   push:
     branches:
-      - dev
-      - rc
-      - master
+      - onewire-tests
   pull_request: ~
 
 env:
