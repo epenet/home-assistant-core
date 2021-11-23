@@ -7,6 +7,7 @@ on:
       - dev
       - rc
       - master
+      - "ci-concurrency"
   pull_request: ~
 
 env:
@@ -14,6 +15,10 @@ env:
   DEFAULT_PYTHON: 3.8
   PRE_COMMIT_CACHE: ~/.cache/pre-commit
   SQLALCHEMY_WARN_20: 1
+
+concurrency:
+  group: ci-${{ github.github.head_ref || github.sha }}
+  cancel-in-progress: true
 
 jobs:
   # Separate job to pre-populate the base dependency cache
