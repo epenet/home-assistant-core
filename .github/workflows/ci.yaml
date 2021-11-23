@@ -8,6 +8,7 @@ on:
       - rc
       - master
       - "ci-concurrency"
+      - "ci-concurrency2"
   pull_request: ~
 
 env:
