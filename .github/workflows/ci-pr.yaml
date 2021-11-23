@@ -10,4 +10,4 @@ concurrency:
 
 jobs:
   call-workflow-1:
-    uses: epenet/home-assistant-core/.github/workflows/ci.yaml@ci-concurrency
+    uses: epenet/home-assistant-core/.github/workflows/ci.yaml@{{ github.github.head_ref }}
