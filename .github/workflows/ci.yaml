@@ -7,6 +7,7 @@ on:
       - dev
       - rc
       - master
+  # Allow workflow to be called from another workflow
   workflow_call:
 
 env:
