@@ -17,6 +17,7 @@ from async_upnp_client.exceptions import (
     UpnpResponseError,
 )
 from async_upnp_client.profiles.dlna import DmrDevice
+from async_upnp_client.profiles.profile import UpnpProfileDevice
 from async_upnp_client.utils import async_get_local_ip
 import voluptuous as vol
 from wakeonlan import send_magic_packet
@@ -86,6 +87,26 @@ SCAN_INTERVAL_PLUS_OFF_TIME = entity_component.DEFAULT_SCAN_INTERVAL + timedelta
 
 # Max delay waiting for app_list to return, as some TVs simply ignore the request
 APP_LIST_DELAY = 3
+
+
+class SamsungMainTVAgent2Device(UpnpProfileDevice):
+    """Representation of a Samsung DMR device."""
+
+    DEVICE_TYPES = [
+        "urn:samsung.com:device:MainTVServer2:1",
+    ]
+
+    SERVICE_IDS = frozenset(
+        {
+            "urn:samsung.com:serviceId:MainTVAgent2",
+        }
+    )
+
+    _SERVICE_TYPES = {
+        "TVA": {
+            "urn:samsung.com:service:MainTVAgent2:1",
+        },
+    }
 
 
 async def async_setup_entry(
