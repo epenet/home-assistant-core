@@ -1,6 +1,8 @@
 """Config flow to configure the iCloud integration."""
+from collections.abc import Mapping
 import logging
 import os
+from typing import Any
 
 from pyicloud import PyiCloudService
 from pyicloud.exceptions import (
@@ -13,6 +15,7 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.storage import Store
 
 from .const import (
@@ -173,21 +176,21 @@ class IcloudFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         return await self._validate_and_create_entry(user_input, "user")
 
-    async def async_step_reauth(self, user_input=None):
+    async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> FlowResult:
         """Update password for a config entry that can't authenticate."""
         # Store existing entry data so it can be used later and set unique ID
         # so existing config entry can be updated
         if not self._existing_entry:
-            await self.async_set_unique_id(user_input.pop("unique_id"))
-            self._existing_entry = user_input.copy()
-            self._description_placeholders = {"username": user_input[CONF_USERNAME]}
-            user_input = None
+            await self.async_set_unique_id(entry_data.pop("unique_id"))
+            self._existing_entry = entry_data.copy()
+            self._description_placeholders = {"username": entry_data[CONF_USERNAME]}
+            entry_data = None
 
-        if user_input is None:
+        if entry_data is None:
             return self._show_setup_form(step_id=config_entries.SOURCE_REAUTH)
 
         return await self._validate_and_create_entry(
-            user_input, config_entries.SOURCE_REAUTH
+            entry_data, config_entries.SOURCE_REAUTH
         )
 
     async def async_step_trusted_device(self, user_input=None, errors=None):

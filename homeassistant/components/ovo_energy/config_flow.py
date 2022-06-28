@@ -1,10 +1,14 @@
 """Config flow to configure the OVO Energy integration."""
+from collections.abc import Mapping
+from typing import Any
+
 import aiohttp
 from ovoenergy.ovoenergy import OVOEnergy
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigFlow
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.data_entry_flow import FlowResult
 
 from .const import DOMAIN
 
@@ -53,20 +57,20 @@ class OVOEnergyFlowHandler(ConfigFlow, domain=DOMAIN):
             step_id="user", data_schema=USER_SCHEMA, errors=errors
         )
 
-    async def async_step_reauth(self, user_input):
+    async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> FlowResult:
         """Handle configuration by re-auth."""
         errors = {}
 
-        if user_input and user_input.get(CONF_USERNAME):
-            self.username = user_input[CONF_USERNAME]
+        if entry_data and entry_data.get(CONF_USERNAME):
+            self.username = entry_data[CONF_USERNAME]
 
         self.context["title_placeholders"] = {CONF_USERNAME: self.username}
 
-        if user_input is not None and user_input.get(CONF_PASSWORD) is not None:
+        if entry_data is not None and entry_data.get(CONF_PASSWORD) is not None:
             client = OVOEnergy()
             try:
                 authenticated = await client.authenticate(
-                    self.username, user_input[CONF_PASSWORD]
+                    self.username, entry_data[CONF_PASSWORD]
                 )
             except aiohttp.ClientError:
                 errors["base"] = "connection_error"
@@ -77,7 +81,7 @@ class OVOEnergyFlowHandler(ConfigFlow, domain=DOMAIN):
                         entry,
                         data={
                             CONF_USERNAME: self.username,
-                            CONF_PASSWORD: user_input[CONF_PASSWORD],
+                            CONF_PASSWORD: entry_data[CONF_PASSWORD],
                         },
                     )
                     return self.async_abort(reason="reauth_successful")

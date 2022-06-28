@@ -85,17 +85,17 @@ class SharkIqConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user", data_schema=SHARKIQ_SCHEMA, errors=errors
         )
 
-    async def async_step_reauth(self, user_input: Mapping[str, Any]) -> FlowResult:
+    async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> FlowResult:
         """Handle re-auth if login is invalid."""
         errors: dict[str, str] = {}
 
-        if user_input is not None:
-            _, errors = await self._async_validate_input(user_input)
+        if entry_data is not None:
+            _, errors = await self._async_validate_input(entry_data)
 
             if not errors:
                 errors = {"base": "unknown"}
                 if entry := await self.async_set_unique_id(self.unique_id):
-                    self.hass.config_entries.async_update_entry(entry, data=user_input)
+                    self.hass.config_entries.async_update_entry(entry, data=entry_data)
                     return self.async_abort(reason="reauth_successful")
 
             if errors["base"] != "invalid_auth":

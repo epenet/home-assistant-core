@@ -80,9 +80,9 @@ class WithingsFlowHandler(
             errors=errors,
         )
 
-    async def async_step_reauth(self, data: Mapping[str, Any]) -> FlowResult:
+    async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> FlowResult:
         """Prompt user to re-authenticate."""
-        if data is not None:
+        if entry_data is not None:
             return await self.async_step_user()
 
         placeholders = {const.PROFILE: self.context["profile"]}
