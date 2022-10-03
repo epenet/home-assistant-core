@@ -75,6 +75,11 @@ _OUNCE_TO_G = _POUND_TO_G / 16
 _GRAVITY = 9.80665
 _MERCURY_DENSITY = 13.5951
 
+# Temperature conversion constants
+_FAHRENHEIT_RATIO = 1.8
+_ZERO_CELSIUS_TO_KELVIN = 273.15
+_ZERO_CELSIUS_TO_FAHRENHEIT = 32
+
 # Volume conversion constants
 _L_TO_CUBIC_METER = 0.001  # 1 L = 0.001 m³
 _ML_TO_CUBIC_METER = 0.001 * _L_TO_CUBIC_METER  # 1 mL = 0.001 L
@@ -271,7 +276,7 @@ class TemperatureConverter(BaseUnitConverter):
     }
     _UNIT_CONVERSION = {
         TEMP_CELSIUS: 1.0,
-        TEMP_FAHRENHEIT: 1.8,
+        TEMP_FAHRENHEIT: _FAHRENHEIT_RATIO,
         TEMP_KELVIN: 1.0,
     }
 
@@ -335,22 +340,22 @@ class TemperatureConverter(BaseUnitConverter):
     @classmethod
     def _fahrenheit_to_celsius(cls, fahrenheit: float) -> float:
         """Convert a temperature in Fahrenheit to Celsius."""
-        return (fahrenheit - 32.0) / 1.8
+        return (fahrenheit - _ZERO_CELSIUS_TO_FAHRENHEIT) / _FAHRENHEIT_RATIO
 
     @classmethod
     def _kelvin_to_celsius(cls, kelvin: float) -> float:
         """Convert a temperature in Kelvin to Celsius."""
-        return kelvin - 273.15
+        return kelvin - _ZERO_CELSIUS_TO_KELVIN
 
     @classmethod
     def _celsius_to_fahrenheit(cls, celsius: float) -> float:
         """Convert a temperature in Celsius to Fahrenheit."""
-        return celsius * 1.8 + 32.0
+        return celsius * _FAHRENHEIT_RATIO + _ZERO_CELSIUS_TO_FAHRENHEIT
 
     @classmethod
     def _celsius_to_kelvin(cls, celsius: float) -> float:
         """Convert a temperature in Celsius to Kelvin."""
-        return celsius + 273.15
+        return celsius + _ZERO_CELSIUS_TO_KELVIN
 
 
 class VolumeConverter(BaseUnitConverter):
