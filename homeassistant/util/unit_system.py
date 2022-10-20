@@ -6,6 +6,7 @@ from typing import Final
 
 import voluptuous as vol
 
+from homeassistant.backports.enum import StrEnum
 from homeassistant.const import (
     ACCUMULATED_PRECIPITATION,
     LENGTH,
@@ -15,8 +16,6 @@ from homeassistant.const import (
     LENGTH_MILLIMETERS,
     MASS,
     MASS_GRAMS,
-    MASS_KILOGRAMS,
-    MASS_OUNCES,
     MASS_POUNDS,
     PRESSURE,
     PRESSURE_PA,
@@ -46,17 +45,129 @@ _CONF_UNIT_SYSTEM_IMPERIAL: Final = "imperial"
 _CONF_UNIT_SYSTEM_METRIC: Final = "metric"
 _CONF_UNIT_SYSTEM_US_CUSTOMARY: Final = "us_customary"
 
-LENGTH_UNITS = DistanceConverter.VALID_UNITS
 
-MASS_UNITS: set[str] = {MASS_POUNDS, MASS_OUNCES, MASS_KILOGRAMS, MASS_GRAMS}
+class PrecipitationIntensityUnit(StrEnum):
+    """Precipitation intensity units.
 
-PRESSURE_UNITS = PressureConverter.VALID_UNITS
+    The derivation of these units is a volume of rain amassing in a container
+    with constant cross section in a given time
+    """
 
-VOLUME_UNITS = VolumeConverter.VALID_UNITS
+    INCHES_PER_DAY = "in/d"
+    """Derived from in³/(in².d)"""
 
-WIND_SPEED_UNITS = SpeedConverter.VALID_UNITS
+    INCHES_PER_HOUR = "in/h"
+    """Derived from in³/(in².h)"""
 
-TEMPERATURE_UNITS: set[str] = {TEMP_FAHRENHEIT, TEMP_CELSIUS}
+    MILLIMETERS_PER_DAY = "mm/d"
+    """Derived from mm³/(mm².d)"""
+
+    MILLIMETERS_PER_HOUR = "mm/h"
+    """Derived from mm³/(mm².h)"""
+
+
+class PrecipitationUnit(StrEnum):
+    """Precipitation units.
+
+    The derivation of these units is a volume of rain amassing in a container
+    with constant cross section
+    """
+
+    INCHES = "in"
+    """Derived from in³/in²"""
+
+    MILLIMETERS = "mm"
+    """Derived from mm³/mm²"""
+
+
+class LengthUnit(StrEnum):
+    """Length units."""
+
+    MILLIMETERS = "mm"
+    """Note: for precipitation, please use PrecipitationUnit.MILLIMETERS"""
+
+    CENTIMETERS = "cm"
+    METERS = "m"
+    KILOMETERS = "km"
+
+    INCHES = "in"
+    """Note: for precipitation, please use PrecipitationUnit.INCHES"""
+
+    FEET = "ft"
+    YARD = "yd"
+    MILES = "mi"
+
+
+class MassUnit(StrEnum):
+    """Mass units."""
+
+    GRAMS = "g"
+    KILOGRAMS = "kg"
+    MILLIGRAMS = "mg"
+    MICROGRAMS = "µg"
+
+    OUNCES = "oz"
+    POUNDS = "lb"
+
+
+class PressureUnit(StrEnum):
+    """Pressure units."""
+
+    PA = "Pa"
+    HPA = "hPa"
+    KPA = "kPa"
+    BAR = "bar"
+    CBAR = "cbar"
+    MBAR = "mbar"
+    MMHG = "mmHg"
+    INHG = "inHg"
+    PSI = "psi"
+
+
+class VolumeUnit(StrEnum):
+    """Volume units."""
+
+    LITERS = "L"
+    MILLILITERS = "mL"
+    CUBIC_METERS = "m³"
+    CUBIC_FEET = "ft³"
+
+    GALLONS = "gal"
+    """US gallon (British gallon is not yet supported)"""
+
+    FLUID_OUNCE = "fl. oz."
+    """US fluid ounce (British fluid ounce is not yet supported)"""
+
+
+class SpeedUnit(StrEnum):
+    """Speed units."""
+
+    FEET_PER_SECOND = "ft/s"
+    METERS_PER_SECOND = "m/s"
+    KILOMETERS_PER_HOUR = "km/h"
+    KNOTS = "kn"
+    MILES_PER_HOUR = "mph"
+
+
+class TemperatureUnit(StrEnum):
+    """Temperature units."""
+
+    CELSIUS = "°C"
+    FAHRENHEIT = "°F"
+    KELVIN = "K"
+
+
+LENGTH_UNITS = {unit.value for unit in LengthUnit}
+
+MASS_UNITS = {unit.value for unit in MassUnit}
+
+PRESSURE_UNITS = {unit.value for unit in PressureUnit}
+
+VOLUME_UNITS = {unit.value for unit in VolumeUnit}
+
+WIND_SPEED_UNITS = {unit.value for unit in SpeedUnit}
+
+TEMPERATURE_UNITS = {unit.value for unit in TemperatureUnit}
 
 
 def _is_valid_unit(unit: str, unit_type: str) -> bool:
