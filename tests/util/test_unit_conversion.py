@@ -25,6 +25,7 @@ from homeassistant.const import (
     UnitOfTemperature,
     UnitOfTime,
     UnitOfVolume,
+    UnitOfVolumeConcentration,
     UnitOfVolumeFlowRate,
     UnitOfVolumetricFlux,
 )
@@ -32,6 +33,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.util import unit_conversion
 from homeassistant.util.unit_conversion import (
     BaseUnitConverter,
+    BloodSugarLevelConverter,
     ConductivityConverter,
     DataRateConverter,
     DistanceConverter,
@@ -59,6 +61,7 @@ INVALID_SYMBOL = "bob"
 _ALL_CONVERTERS: dict[type[BaseUnitConverter], list[str | None]] = {
     converter: sorted(converter.VALID_UNITS, key=lambda x: (x is None, x))
     for converter in (
+        BloodSugarLevelConverter,
         ConductivityConverter,
         DataRateConverter,
         DistanceConverter,
@@ -80,6 +83,11 @@ _ALL_CONVERTERS: dict[type[BaseUnitConverter], list[str | None]] = {
 
 # Dict containing all converters with a corresponding unit ratio.
 _GET_UNIT_RATIO: dict[type[BaseUnitConverter], tuple[str | None, str | None, float]] = {
+    BloodSugarLevelConverter: (
+        UnitOfVolumeConcentration.MG_DL,
+        UnitOfVolumeConcentration.MMOL_L,
+        18,
+    ),
     ConductivityConverter: (
         UnitOfConductivity.MICROSIEMENS,
         UnitOfConductivity.MILLISIEMENS,
@@ -130,6 +138,10 @@ _GET_UNIT_RATIO: dict[type[BaseUnitConverter], tuple[str | None, str | None, flo
 _CONVERTED_VALUE: dict[
     type[BaseUnitConverter], list[tuple[float, str | None, float, str | None]]
 ] = {
+    BloodSugarLevelConverter: [
+        (36, UnitOfVolumeConcentration.MG_DL, 2, UnitOfVolumeConcentration.MMOL_L),
+        (1, UnitOfVolumeConcentration.MMOL_L, 18, UnitOfVolumeConcentration.MG_DL),
+    ],
     ConductivityConverter: [
         (5, UnitOfConductivity.SIEMENS, 5e3, UnitOfConductivity.MILLISIEMENS),
         (5, UnitOfConductivity.SIEMENS, 5e6, UnitOfConductivity.MICROSIEMENS),

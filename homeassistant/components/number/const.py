@@ -109,6 +109,12 @@ class NumberDeviceClass(StrEnum):
     Unit of measurement: `%`
     """
 
+    BLOOD_SUGAR_LEVEL = "blood_sugar_level"
+    """Blood sugar level.
+
+    Unit of measurement: `mmol/L`, `mg/dL`
+    """
+
     CO = "carbon_monoxide"
     """Carbon Monoxide gas concentration.
 

@@ -56,6 +56,7 @@
       "aqi": "{entity_name} air quality index changes",
       "atmospheric_pressure": "{entity_name} atmospheric pressure changes",
       "battery_level": "{entity_name} battery level changes",
+      "blood_sugar_level": "{entity_name} blood sugar level changes",
       "carbon_monoxide": "{entity_name} carbon monoxide concentration changes",
       "carbon_dioxide": "{entity_name} carbon dioxide concentration changes",
       "conductivity": "{entity_name} conductivity changes",
@@ -148,6 +149,9 @@
     },
     "battery": {
       "name": "Battery"
+    },
+    "blood_sugar_level": {
+      "name": "Blood sugar level"
     },
     "carbon_monoxide": {
       "name": "Carbon monoxide"

@@ -24,6 +24,7 @@ from homeassistant.const import (
     UnitOfTemperature,
     UnitOfTime,
     UnitOfVolume,
+    UnitOfVolumeConcentration,
     UnitOfVolumeFlowRate,
     UnitOfVolumetricFlux,
 )
@@ -124,6 +125,32 @@ class BaseUnitConverter:
         return from_ratio / to_ratio
 
 
+class BloodSugarLevelConverter(BaseUnitConverter):
+    """Utility to convert blood sugar level values."""
+
+    UNIT_CLASS = "blood_sugar_level"
+    _UNIT_CONVERSION: dict[str | None, float] = {
+        UnitOfVolumeConcentration.MG_DL: 1,
+        UnitOfVolumeConcentration.MMOL_L: 1 / 18,
+    }
+    VALID_UNITS = {
+        UnitOfVolumeConcentration.MG_DL,
+        UnitOfVolumeConcentration.MMOL_L,
+    }
+
+
+class ConductivityConverter(BaseUnitConverter):
+    """Utility to convert electric current values."""
+
+    UNIT_CLASS = "conductivity"
+    _UNIT_CONVERSION: dict[str | None, float] = {
+        UnitOfConductivity.MICROSIEMENS: 1,
+        UnitOfConductivity.MILLISIEMENS: 1e-3,
+        UnitOfConductivity.SIEMENS: 1e-6,
+    }
+    VALID_UNITS = set(UnitOfConductivity)
+
+
 class DataRateConverter(BaseUnitConverter):
     """Utility to convert data rate values."""
 
@@ -169,18 +196,6 @@ class DistanceConverter(BaseUnitConverter):
         UnitOfLength.INCHES,
         UnitOfLength.YARDS,
     }
-
-
-class ConductivityConverter(BaseUnitConverter):
-    """Utility to convert electric current values."""
-
-    UNIT_CLASS = "conductivity"
-    _UNIT_CONVERSION: dict[str | None, float] = {
-        UnitOfConductivity.MICROSIEMENS: 1,
-        UnitOfConductivity.MILLISIEMENS: 1e-3,
-        UnitOfConductivity.SIEMENS: 1e-6,
-    }
-    VALID_UNITS = set(UnitOfConductivity)
 
 
 class ElectricCurrentConverter(BaseUnitConverter):
