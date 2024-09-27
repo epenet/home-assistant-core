@@ -9,7 +9,6 @@ from typing import Final
 import voluptuous as vol
 
 from homeassistant.const import (
-    CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
     CONCENTRATION_PARTS_PER_BILLION,
     CONCENTRATION_PARTS_PER_MILLION,
     LIGHT_LUX,
@@ -36,6 +35,7 @@ from homeassistant.const import (
     UnitOfTemperature,
     UnitOfTime,
     UnitOfVolume,
+    UnitOfVolumeConcentration,
     UnitOfVolumeFlowRate,
     UnitOfVolumetricFlux,
 )
@@ -550,14 +550,20 @@ DEVICE_CLASS_UNITS: dict[SensorDeviceClass, set[type[StrEnum] | str | None]] = {
     SensorDeviceClass.ILLUMINANCE: {LIGHT_LUX},
     SensorDeviceClass.IRRADIANCE: set(UnitOfIrradiance),
     SensorDeviceClass.MOISTURE: {PERCENTAGE},
-    SensorDeviceClass.NITROGEN_DIOXIDE: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
-    SensorDeviceClass.NITROGEN_MONOXIDE: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
-    SensorDeviceClass.NITROUS_OXIDE: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
-    SensorDeviceClass.OZONE: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
+    SensorDeviceClass.NITROGEN_DIOXIDE: {
+        UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER
+    },
+    SensorDeviceClass.NITROGEN_MONOXIDE: {
+        UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER
+    },
+    SensorDeviceClass.NITROUS_OXIDE: {
+        UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER
+    },
+    SensorDeviceClass.OZONE: {UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER},
     SensorDeviceClass.PH: {None},
-    SensorDeviceClass.PM1: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
-    SensorDeviceClass.PM10: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
-    SensorDeviceClass.PM25: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
+    SensorDeviceClass.PM1: {UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER},
+    SensorDeviceClass.PM10: {UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER},
+    SensorDeviceClass.PM25: {UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER},
     SensorDeviceClass.POWER_FACTOR: {PERCENTAGE, None},
     SensorDeviceClass.POWER: {UnitOfPower.WATT, UnitOfPower.KILO_WATT},
     SensorDeviceClass.PRECIPITATION: set(UnitOfPrecipitationDepth),
@@ -570,10 +576,12 @@ DEVICE_CLASS_UNITS: dict[SensorDeviceClass, set[type[StrEnum] | str | None]] = {
     },
     SensorDeviceClass.SOUND_PRESSURE: set(UnitOfSoundPressure),
     SensorDeviceClass.SPEED: set(UnitOfSpeed).union(set(UnitOfVolumetricFlux)),
-    SensorDeviceClass.SULPHUR_DIOXIDE: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
+    SensorDeviceClass.SULPHUR_DIOXIDE: {
+        UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER
+    },
     SensorDeviceClass.TEMPERATURE: set(UnitOfTemperature),
     SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS: {
-        CONCENTRATION_MICROGRAMS_PER_CUBIC_METER
+        UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER
     },
     SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS_PARTS: {
         CONCENTRATION_PARTS_PER_BILLION,

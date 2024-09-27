@@ -1200,6 +1200,10 @@ UV_INDEX: Final = "UV index"
 # Percentage units
 PERCENTAGE: Final = "%"
 
+# Concentration units
+CONCENTRATION_PARTS_PER_MILLION: Final = "ppm"
+CONCENTRATION_PARTS_PER_BILLION: Final = "ppb"
+
 # Rotational speed units
 REVOLUTIONS_PER_MINUTE: Final = "rpm"
 
@@ -1283,13 +1287,33 @@ _DEPRECATED_PRECIPITATION_INCHES_PER_HOUR: Final = DeprecatedConstantEnum(
 )
 """Deprecated: please use UnitOfVolumetricFlux.INCHES_PER_HOUR"""
 
-# Concentration units
-CONCENTRATION_MICROGRAMS_PER_CUBIC_METER: Final = "µg/m³"
-CONCENTRATION_MILLIGRAMS_PER_CUBIC_METER: Final = "mg/m³"
-CONCENTRATION_MICROGRAMS_PER_CUBIC_FOOT: Final = "μg/ft³"
-CONCENTRATION_PARTS_PER_CUBIC_METER: Final = "p/m³"
-CONCENTRATION_PARTS_PER_MILLION: Final = "ppm"
-CONCENTRATION_PARTS_PER_BILLION: Final = "ppb"
+
+# Volume Concentration units
+class UnitOfVolumeConcentration(StrEnum):
+    """Volume concentration units."""
+
+    MICROGRAMS_PER_CUBIC_METER = "µg/m³"
+    MILLIGRAMS_PER_CUBIC_METER = "mg/m³"
+    MICROGRAMS_PER_CUBIC_FOOT = "μg/ft³"
+    PARTS_PER_CUBIC_METER = "p/m³"
+
+
+_DEPRECATED_CONCENTRATION_MICROGRAMS_PER_CUBIC_METER: Final = DeprecatedConstantEnum(
+    UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER,
+    "2025.11",
+)
+_DEPRECATED_CONCENTRATION_MILLIGRAMS_PER_CUBIC_METER: Final = DeprecatedConstantEnum(
+    UnitOfVolumeConcentration.MILLIGRAMS_PER_CUBIC_METER,
+    "2025.11",
+)
+_DEPRECATED_CONCENTRATION_MICROGRAMS_PER_CUBIC_FOOT: Final = DeprecatedConstantEnum(
+    UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_FOOT,
+    "2025.11",
+)
+_DEPRECATED_CONCENTRATION_PARTS_PER_CUBIC_METER: Final = DeprecatedConstantEnum(
+    UnitOfVolumeConcentration.PARTS_PER_CUBIC_METER,
+    "2025.11",
+)
 
 
 # Speed units

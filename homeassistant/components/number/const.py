@@ -9,7 +9,6 @@ from typing import Final
 import voluptuous as vol
 
 from homeassistant.const import (
-    CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
     CONCENTRATION_PARTS_PER_BILLION,
     CONCENTRATION_PARTS_PER_MILLION,
     LIGHT_LUX,
@@ -36,6 +35,7 @@ from homeassistant.const import (
     UnitOfTemperature,
     UnitOfTime,
     UnitOfVolume,
+    UnitOfVolumeConcentration,
     UnitOfVolumeFlowRate,
     UnitOfVolumetricFlux,
 )
@@ -455,14 +455,20 @@ DEVICE_CLASS_UNITS: dict[NumberDeviceClass, set[type[StrEnum] | str | None]] = {
     NumberDeviceClass.ILLUMINANCE: {LIGHT_LUX},
     NumberDeviceClass.IRRADIANCE: set(UnitOfIrradiance),
     NumberDeviceClass.MOISTURE: {PERCENTAGE},
-    NumberDeviceClass.NITROGEN_DIOXIDE: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
-    NumberDeviceClass.NITROGEN_MONOXIDE: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
-    NumberDeviceClass.NITROUS_OXIDE: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
-    NumberDeviceClass.OZONE: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
+    NumberDeviceClass.NITROGEN_DIOXIDE: {
+        UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER
+    },
+    NumberDeviceClass.NITROGEN_MONOXIDE: {
+        UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER
+    },
+    NumberDeviceClass.NITROUS_OXIDE: {
+        UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER
+    },
+    NumberDeviceClass.OZONE: {UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER},
     NumberDeviceClass.PH: {None},
-    NumberDeviceClass.PM1: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
-    NumberDeviceClass.PM10: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
-    NumberDeviceClass.PM25: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
+    NumberDeviceClass.PM1: {UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER},
+    NumberDeviceClass.PM10: {UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER},
+    NumberDeviceClass.PM25: {UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER},
     NumberDeviceClass.POWER_FACTOR: {PERCENTAGE, None},
     NumberDeviceClass.POWER: {UnitOfPower.WATT, UnitOfPower.KILO_WATT},
     NumberDeviceClass.PRECIPITATION: set(UnitOfPrecipitationDepth),
@@ -475,10 +481,12 @@ DEVICE_CLASS_UNITS: dict[NumberDeviceClass, set[type[StrEnum] | str | None]] = {
     },
     NumberDeviceClass.SOUND_PRESSURE: set(UnitOfSoundPressure),
     NumberDeviceClass.SPEED: set(UnitOfSpeed).union(set(UnitOfVolumetricFlux)),
-    NumberDeviceClass.SULPHUR_DIOXIDE: {CONCENTRATION_MICROGRAMS_PER_CUBIC_METER},
+    NumberDeviceClass.SULPHUR_DIOXIDE: {
+        UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER
+    },
     NumberDeviceClass.TEMPERATURE: set(UnitOfTemperature),
     NumberDeviceClass.VOLATILE_ORGANIC_COMPOUNDS: {
-        CONCENTRATION_MICROGRAMS_PER_CUBIC_METER
+        UnitOfVolumeConcentration.MICROGRAMS_PER_CUBIC_METER
     },
     NumberDeviceClass.VOLATILE_ORGANIC_COMPOUNDS_PARTS: {
         CONCENTRATION_PARTS_PER_BILLION,
