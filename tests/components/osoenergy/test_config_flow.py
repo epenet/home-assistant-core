@@ -68,7 +68,7 @@ async def test_reauth_flow(hass: HomeAssistant) -> None:
         result = await mock_config.start_reauth_flow(hass)
 
     assert result["type"] is FlowResultType.FORM
-    assert result["step_id"] == "user"
+    assert result["step_id"] == "reauth_confirm"
     assert result["errors"] is None
 
     with patch(

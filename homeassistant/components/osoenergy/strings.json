@@ -8,7 +8,7 @@
           "api_key": "[%key:common::config_flow::data::api_key%]"
         }
       },
-      "reauth": {
+      "reauth_confirm": {
         "title": "OSO Energy Auth",
         "description": "Generate and enter a new 'Subscription Key' for your account at 'https://portal.osoenergy.no/'.",
         "data": {
