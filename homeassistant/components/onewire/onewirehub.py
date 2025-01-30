@@ -17,6 +17,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.util.signal_type import SignalType
 
+from .async_proxy import AsyncProxy
 from .const import (
     DEVICE_SUPPORT,
     DOMAIN,
@@ -56,7 +57,7 @@ def _is_known_device(device_family: str, device_type: str | None) -> bool:
 class OneWireHub:
     """Hub to communicate with server."""
 
-    owproxy: protocol._Proxy
+    owproxy: AsyncProxy
     devices: list[OWDeviceDescription]
     _version: str
 
@@ -65,21 +66,14 @@ class OneWireHub:
         self._hass = hass
         self._config_entry = config_entry
 
-    def _initialize(self) -> None:
-        """Connect to the server, and discover connected devices.
-
-        Needs to be run in executor.
-        """
-        host = self._config_entry.data[CONF_HOST]
-        port = self._config_entry.data[CONF_PORT]
-        _LOGGER.debug("Initializing connection to %s:%s", host, port)
-        self.owproxy = protocol.proxy(host, port)
-        self._version = self.owproxy.read(protocol.PTH_VERSION).decode()
-        self.devices = _discover_devices(self.owproxy)
-
     async def initialize(self) -> None:
         """Initialize a config entry."""
-        await self._hass.async_add_executor_job(self._initialize)
+        self.owproxy = AsyncProxy(
+            self._config_entry.data[CONF_HOST], self._config_entry.data[CONF_PORT]
+        )
+        await self.owproxy.validate()
+        self._version = await self.owproxy.read(protocol.PTH_VERSION).decode()
+        self.devices = await _discover_devices(self.owproxy)
         self._populate_device_registry(self.devices)
 
     @callback
@@ -103,9 +97,7 @@ class OneWireHub:
 
     async def _scan_for_new_devices(self, _: datetime) -> None:
         """Scan the bus for new devices."""
-        devices = await self._hass.async_add_executor_job(
-            _discover_devices, self.owproxy
-        )
+        devices = await _discover_devices(self.owproxy)
         existing_device_ids = [device.id for device in self.devices]
         new_devices = [
             device for device in devices if device.id not in existing_device_ids
@@ -118,16 +110,16 @@ class OneWireHub:
             )
 
 
-def _discover_devices(
-    owproxy: protocol._Proxy, path: str = "/", parent_id: str | None = None
+async def _discover_devices(
+    owproxy: AsyncProxy, path: str = "/", parent_id: str | None = None
 ) -> list[OWDeviceDescription]:
     """Discover all server devices."""
     devices: list[OWDeviceDescription] = []
-    for device_path in owproxy.dir(path):
+    for device_path in await owproxy.dir(path):
         device_id = os.path.split(os.path.split(device_path)[0])[1]
-        device_family = owproxy.read(f"{device_path}family").decode()
+        device_family = await owproxy.read_string(f"{device_path}family")
         _LOGGER.debug("read `%sfamily`: %s", device_path, device_family)
-        device_type = _get_device_type(owproxy, device_path)
+        device_type = await _get_device_type(owproxy, device_path)
         if not _is_known_device(device_family, device_type):
             _LOGGER.warning(
                 "Ignoring unknown device family/type (%s/%s) found for device %s",
@@ -156,22 +148,22 @@ def _discover_devices(
         devices.append(device)
         if device_branches := DEVICE_COUPLERS.get(device_family):
             for branch in device_branches:
-                devices += _discover_devices(
+                devices += await _discover_devices(
                     owproxy, f"{device_path}{branch}", device_id
                 )
 
     return devices
 
 
-def _get_device_type(owproxy: protocol._Proxy, device_path: str) -> str | None:
+async def _get_device_type(owproxy: AsyncProxy, device_path: str) -> str | None:
     """Get device model."""
     try:
-        device_type: str = owproxy.read(f"{device_path}type").decode()
+        device_type = await owproxy.read_string(f"{device_path}type")
     except protocol.ProtocolError as exc:
         _LOGGER.debug("Unable to read `%stype`: %s", device_path, exc)
         return None
     _LOGGER.debug("read `%stype`: %s", device_path, device_type)
     if device_type == "EDS":
-        device_type = owproxy.read(f"{device_path}device_type").decode()
+        device_type = await owproxy.read_string(f"{device_path}device_type")
         _LOGGER.debug("read `%sdevice_type`: %s", device_path, device_type)
     return device_type
