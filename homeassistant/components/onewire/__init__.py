@@ -2,13 +2,12 @@
 
 import logging
 
-from pyownet import protocol
-
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import device_registry as dr
 
+from .aio_ownet.exceptions import OWServerConnectionError, OWServerReturnError
 from .const import DOMAIN
 from .onewirehub import OneWireConfigEntry, OneWireHub
 
@@ -28,8 +27,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: OneWireConfigEntry) -> b
     try:
         await onewire_hub.initialize()
     except (
-        protocol.ConnError,  # Failed to connect to the server
-        protocol.OwnetError,  # Connected to server, but failed to list the devices
+        OWServerConnectionError,  # Failed to connect to the server
+        OWServerReturnError,  # Connected to server, but failed to list the devices
     ) as exc:
         raise ConfigEntryNotReady from exc
 

@@ -10,8 +10,6 @@ import os
 from types import MappingProxyType
 from typing import Any
 
-from pyownet import protocol
-
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -30,6 +28,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 
+from .aio_ownet.exceptions import OWServerProtocolError
 from .const import (
     DEVICE_KEYS_0_3,
     DEVICE_KEYS_A_B,
@@ -400,9 +399,7 @@ async def async_setup_entry(
             return
         # note: we have to go through the executor as SENSOR platform
         # makes extra calls to the hub during device listing
-        entities = await hass.async_add_executor_job(
-            get_entities, hub, devices, config_entry.options
-        )
+        entities = await get_entities(hub, devices, config_entry.options)
         async_add_entities(entities, True)
 
     hub = config_entry.runtime_data
@@ -412,7 +409,7 @@ async def async_setup_entry(
     )
 
 
-def get_entities(
+async def get_entities(
     onewire_hub: OneWireHub,
     devices: list[OWDeviceDescription],
     options: MappingProxyType[str, Any],
@@ -442,9 +439,9 @@ def get_entities(
             if description.key.startswith("moisture/"):
                 s_id = description.key.split(".")[1]
                 is_leaf = int(
-                    onewire_hub.owproxy.read(
+                    await onewire_hub.owproxy.read(
                         f"{device_path}moisture/is_leaf.{s_id}"
-                    ).decode()
+                    )
                 )
                 if is_leaf:
                     description = dataclasses.replace(
@@ -464,8 +461,8 @@ def get_entities(
             if family == "12":
                 # We need to check if there is TAI8570 plugged in
                 try:
-                    onewire_hub.owproxy.read(device_file)
-                except protocol.OwnetError as err:
+                    await onewire_hub.owproxy.read(device_file)
+                except OWServerProtocolError as err:
                     _LOGGER.debug(
                         "Ignoring unreachable sensor %s",
                         device_file,

@@ -6,8 +6,6 @@ from datetime import datetime, timedelta
 import logging
 import os
 
-from pyownet import protocol
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_VIA_DEVICE, CONF_HOST, CONF_PORT
 from homeassistant.core import HomeAssistant, callback
@@ -17,7 +15,9 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.util.signal_type import SignalType
 
-from .async_proxy import AsyncProxy
+from .aio_ownet.definitions import OWServerCommonPath
+from .aio_ownet.exceptions import OWServerProtocolError
+from .aio_ownet.proxy import OWServerStatelessProxy
 from .const import (
     DEVICE_SUPPORT,
     DOMAIN,
@@ -57,7 +57,7 @@ def _is_known_device(device_family: str, device_type: str | None) -> bool:
 class OneWireHub:
     """Hub to communicate with server."""
 
-    owproxy: AsyncProxy
+    owproxy: OWServerStatelessProxy
     devices: list[OWDeviceDescription]
     _version: str
 
@@ -68,11 +68,11 @@ class OneWireHub:
 
     async def initialize(self) -> None:
         """Initialize a config entry."""
-        self.owproxy = AsyncProxy(
+        self.owproxy = OWServerStatelessProxy(
             self._config_entry.data[CONF_HOST], self._config_entry.data[CONF_PORT]
         )
         await self.owproxy.validate()
-        self._version = await self.owproxy.read(protocol.PTH_VERSION).decode()
+        self._version = await self.owproxy.read_string(OWServerCommonPath.VERSION)
         self.devices = await _discover_devices(self.owproxy)
         self._populate_device_registry(self.devices)
 
@@ -111,7 +111,7 @@ class OneWireHub:
 
 
 async def _discover_devices(
-    owproxy: AsyncProxy, path: str = "/", parent_id: str | None = None
+    owproxy: OWServerStatelessProxy, path: str = "/", parent_id: str | None = None
 ) -> list[OWDeviceDescription]:
     """Discover all server devices."""
     devices: list[OWDeviceDescription] = []
@@ -155,11 +155,13 @@ async def _discover_devices(
     return devices
 
 
-async def _get_device_type(owproxy: AsyncProxy, device_path: str) -> str | None:
+async def _get_device_type(
+    owproxy: OWServerStatelessProxy, device_path: str
+) -> str | None:
     """Get device model."""
     try:
         device_type = await owproxy.read_string(f"{device_path}type")
-    except protocol.ProtocolError as exc:
+    except OWServerProtocolError as exc:
         _LOGGER.debug("Unable to read `%stype`: %s", device_path, exc)
         return None
     _LOGGER.debug("read `%stype`: %s", device_path, device_type)

@@ -6,13 +6,12 @@ from dataclasses import dataclass
 import logging
 from typing import Any
 
-from pyownet import protocol
-
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import Entity, EntityDescription
 from homeassistant.helpers.typing import StateType
 
-from .async_proxy import AsyncProxy
+from .aio_ownet.exceptions import OWServerError
+from .aio_ownet.proxy import OWServerStatelessProxy
 from .const import READ_MODE_BOOL, READ_MODE_INT
 
 
@@ -38,7 +37,7 @@ class OneWireEntity(Entity):
         device_id: str,
         device_info: DeviceInfo,
         device_file: str,
-        owproxy: AsyncProxy,
+        owproxy: OWServerStatelessProxy,
     ) -> None:
         """Initialize the entity."""
         self.entity_description = description
@@ -71,7 +70,7 @@ class OneWireEntity(Entity):
         """Get the latest data from the device."""
         try:
             self._value_raw = float(await self._read_value())
-        except protocol.Error as exc:
+        except OWServerError as exc:
             if self._last_update_success:
                 _LOGGER.error("Error fetching %s data: %s", self.name, exc)
                 self._last_update_success = False
