@@ -397,8 +397,6 @@ async def async_setup_entry(
         """Add 1-Wire entities for all devices."""
         if not devices:
             return
-        # note: we have to go through the executor as SENSOR platform
-        # makes extra calls to the hub during device listing
         entities = await get_entities(hub, devices, config_entry.options)
         async_add_entities(entities, True)
 
