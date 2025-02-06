@@ -28,7 +28,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 
-from .aio_ownet.exceptions import OWServerProtocolError
+from .aio_ownet.exceptions import OWServerReturnError
 from .const import (
     DEVICE_KEYS_0_3,
     DEVICE_KEYS_A_B,
@@ -462,7 +462,7 @@ async def get_entities(
                 # We need to check if there is TAI8570 plugged in
                 try:
                     await onewire_hub.owproxy.read(device_file)
-                except OWServerProtocolError as err:
+                except OWServerReturnError as err:
                     _LOGGER.debug(
                         "Ignoring unreachable sensor %s",
                         device_file,
